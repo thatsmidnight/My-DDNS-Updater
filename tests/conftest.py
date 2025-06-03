@@ -6,7 +6,9 @@ from pathlib import Path
 from types import ModuleType
 
 # Third Party
+import boto3
 import pytest
+from moto import mock_aws
 
 
 @pytest.fixture(scope="session")
@@ -17,6 +19,15 @@ def aws_credentials():
     os.environ["AWS_SECURITY_TOKEN"] = "testing"
     os.environ["AWS_SESSION_TOKEN"] = "testing"
     os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
+
+
+@pytest.fixture(scope="function")
+def mock_ssm(aws_credentials):
+    """Fixture to mock AWS SSM service using moto."""
+    with mock_aws():
+        # Create a mocked SSM client
+        ssm_client = boto3.client("ssm", region_name="us-east-1")
+        yield ssm_client
 
 
 def pytest_configure(config):

@@ -23,6 +23,7 @@ class CustomLambdaFromDockerImage(Construct):
         environment: Optional[dict] = None,
         layers: Optional[List[_lambda.ILayerVersion]] = None,
         initial_policy: Optional[List[iam.PolicyStatement]] = None,
+        role: Optional[iam.IRole] = None,
         description: Optional[str] = None,
         **kwargs,
     ) -> None:
@@ -49,6 +50,8 @@ class CustomLambdaFromDockerImage(Construct):
         initial_policy : Optional[List[iam.PolicyStatement]], optional
             Initial IAM policy statements to attach to the Lambda function,
             by default None
+        role : Optional[iam.IRole], optional
+            IAM role to attach to the Lambda function, by default None
         description : Optional[str], optional
             Description for the Lambda function, by default None
         """
@@ -93,6 +96,7 @@ class CustomLambdaFromDockerImage(Construct):
             environment=powertools_env_vars,
             layers=layers,
             initial_policy=initial_policy,
+            role=role,
             description=description
             or f"Lambda function for {name}{stack_suffix}",
         )

@@ -42,6 +42,7 @@ class MyDdnsResolverStack(Stack):
             If the DDNS hostname is not provided in the CDK context.
         """
         super().__init__(scope, construct_id, **kwargs)
+        self.stack_suffix = (stack_suffix if stack_suffix else "").lower()
 
         # region Get DDNS hostname from CDK context (passed via CI/CD or CLI)
         self._ddns_hostname = self.node.try_get_context("ddns-hostname")

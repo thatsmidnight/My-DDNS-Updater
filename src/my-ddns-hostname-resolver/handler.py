@@ -16,7 +16,9 @@ logger = Logger()
 
 
 @logger.inject_lambda_context(log_event=True)
-def handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, Any]:
+def lambda_handler(
+    event: Dict[str, Any], context: LambdaContext
+) -> Dict[str, Any]:
     """Lambda handler function to resolve DDNS and update SSM Parameter.
 
     Parameters

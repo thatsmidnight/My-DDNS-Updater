@@ -9,6 +9,7 @@ import aws_cdk.aws_events_targets as targets
 import aws_cdk.aws_iam as iam
 import aws_cdk.aws_lambda as lambda_
 import aws_cdk.aws_ssm as ssm
+from aws_cdk import Stack, Duration
 from constructs import Construct
 
 # Local Modules
@@ -38,7 +39,7 @@ class MyDdnsResolverStack(Stack):
             "CurrentHomeIpParam",
             parameter_name=ip_param_name,
             string_value="0.0.0.0",  # Initial placeholder IP
-            description="Stores the current public IP address of the home network via DDNS resolver."
+            description="Stores the current public IP address of the home network via DDNS resolver.",
         )
         cdk.CfnOutput(
             self,
@@ -64,7 +65,7 @@ class MyDdnsResolverStack(Stack):
             iam.PolicyStatement(
                 actions=[
                     "ssm:PutParameter",
-                    "ssm:GetParameter", # Needed to check current value
+                    "ssm:GetParameter",  # Needed to check current value
                 ],
                 resources=[current_home_ip_param.parameter_arn],
             )
@@ -106,7 +107,7 @@ class MyDdnsResolverStack(Stack):
                 )
             ],
         )
-        
+
         # Policy to allow authorizer Lambda to read from the SSM Parameter
         authorizer_lambda_role.add_to_policy(
             iam.PolicyStatement(
@@ -124,7 +125,7 @@ class MyDdnsResolverStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_12,
             handler="authorize_ip.handler",
             code=lambda_.Code.from_asset("lambda"),
-            timeout=cdk.Duration.seconds(5), # Authorizers should be fast
+            timeout=cdk.Duration.seconds(5),  # Authorizers should be fast
             memory_size=128,
             role=authorizer_lambda_role,
             environment={
@@ -142,9 +143,8 @@ class MyDdnsResolverStack(Stack):
             "ApiGatewayInvokePermission",
             principal=iam.ServicePrincipal("apigateway.amazonaws.com"),
             action="lambda:InvokeFunction",
-            source_arn=f"arn:aws:execute-api:{self.region}:{self.account}:*/*/*/*", # Broad permission for simplicity, narrow if needed
+            source_arn=f"arn:aws:execute-api:{self.region}:{self.account}:*/*/*/*",  # Broad permission for simplicity, narrow if needed
         )
-
 
     def create_lambda_function(
         self,
